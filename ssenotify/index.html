@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📢 Live Notifications</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #d63384;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2::before {
+      content: '📢';
+    }
+
+    #stream {
+      margin-top: 20px;
+      max-width: 600px;
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .note {
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-left: 5px solid;
+      border-radius: 4px;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .project {
+      border-color: #0d6efd;
+      background-color: #e7f1ff;
+    }
+
+    .task {
+      border-color: #198754;
+      background-color: #e9fce9;
+    }
+
+    .comment {
+      border-color: #fd7e14;
+      background-color: #fff4e6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Live Notifications</h2>
+  <div id="stream"></div>
+
+  <script>
+    const evtSource = new EventSource("http://127.0.0.1:8000/api/notifications/stream/");
+    
+    evtSource.onmessage = function(e) {
+      const div = document.getElementById("stream");
+      const note = document.createElement("div");
+      note.classList.add("note");
+
+      if (e.data.includes("Project created")) {
+        note.classList.add("project");
+      } else if (e.data.includes("Task created")) {
+        note.classList.add("task");
+      } else if (e.data.includes("Comment created")) {
+        note.classList.add("comment");
+      }
+
+      note.textContent = e.data;
+      div.prepend(note);
+    };
+  </script>
+
+</body>
+</html>
